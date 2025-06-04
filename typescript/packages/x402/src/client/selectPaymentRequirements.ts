@@ -14,7 +14,7 @@ import { getNetworkId } from "../shared/network";
  */
 export function selectPaymentRequirements(paymentRequirements: PaymentRequirements[], network?: Network, scheme?: "exact"): PaymentRequirements {
   // Sort `base` payment requirements to the front of the list. This is to ensure that base is preferred if available.
-  paymentRequirements.sort((a, b) => {
+  const sortedRequirements = [...paymentRequirements].sort((a, b) => {
     if (a.network === "base" && b.network !== "base") {
       return -1;
     }
@@ -25,7 +25,7 @@ export function selectPaymentRequirements(paymentRequirements: PaymentRequiremen
   });
 
   // Filter down to the scheme/network if provided
-  const broadlyAcceptedPaymentRequirements = paymentRequirements.filter(requirement => {
+  const broadlyAcceptedPaymentRequirements = sortedRequirements.filter(requirement => {
     // If the scheme is not provided, we accept any scheme.
     const isExpectedScheme = !scheme || requirement.scheme === scheme;
     // If the chain is not provided, we accept any chain.
@@ -51,7 +51,7 @@ export function selectPaymentRequirements(paymentRequirements: PaymentRequiremen
   }
 
   // If no matching requirements are found, return the first requirement.
-  return paymentRequirements[0];
+  return sortedRequirements[0];
 }
 
 /**
